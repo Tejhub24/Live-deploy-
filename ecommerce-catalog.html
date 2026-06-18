@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VOLTA — Premium Electronics</title>
+  <meta name="description" content="Curated premium electronics, minimal design, maximum performance." />
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+  <!-- Typography: Space Grotesk (utility/display) + DM Serif Display (accent) -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+
+  <!-- React & Babel via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js" crossorigin></script>
+
+  <style>
+    /* ─── DESIGN TOKENS ────────────────────────────────────────── */
+    :root {
+      --ink:       #0D0D0F;
+      --chalk:     #F6F5F2;
+      --mid:       #7A7A82;
+      --wire:      #E2E1DE;
+      --volt:      #C8FF00;      /* signature accent */
+      --volt-dim:  #A8D800;
+      --surface:   #FFFFFF;
+      --error:     #FF4D4D;
+
+      --f-display: 'DM Serif Display', Georgia, serif;
+      --f-body:    'Space Grotesk', system-ui, sans-serif;
+
+      --r: 6px;
+      --transition: 220ms cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--f-body);
+      background: var(--chalk);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── UTILITY ──────────────────────────────────────────────── */
+    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+    /* ─── LAYOUT ───────────────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* ─── NAV ──────────────────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(246,245,242,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--wire);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-family: var(--f-display);
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      cursor: pointer;
+      user-select: none;
+    }
+    .nav-logo span {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--volt);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-style: italic;
+    }
+    .nav-links {
+      display: flex; gap: 32px; list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.875rem; font-weight: 500;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color var(--transition);
+      cursor: pointer;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .cart-btn {
+      position: relative; background: var(--ink); color: var(--chalk);
+      border: none; border-radius: var(--r); padding: 8px 18px;
+      font-family: var(--f-body); font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; transition: background var(--transition);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cart-btn:hover { background: #222; }
+    .cart-badge {
+      background: var(--volt); color: var(--ink);
+      border-radius: 50%; width: 18px; height: 18px;
+      font-size: 0.7rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .menu-btn {
+      display: none; background: none; border: none;
+      font-size: 1.4rem; cursor: pointer; color: var(--ink);
+    }
+
+    /* ─── HERO ─────────────────────────────────────────────────── */
+    .hero {
+      background: var(--ink);
+      color: var(--chalk);
+      padding: 80px 0 72px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; top: -60px; right: -80px;
+      width: 420px; height: 420px;
+      background: var(--volt);
+      border-radius: 50%;
+      opacity: 0.07;
+      pointer-events: none;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--volt);
+      margin-bottom: 16px;
+    }
+    .hero-headline {
+      font-family: var(--f-display);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+    .hero-headline em { font-style: italic; color: var(--volt); }
+    .hero-sub {
+      font-size: 1rem; color: #9A9A9F; max-width: 460px; margin-bottom: 36px;
+    }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--volt); color: var(--ink);
+      border: none; border-radius: var(--r); padding: 12px 28px;
+      font-family: var(--f-body); font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: transform var(--transition), box-shadow var(--transition);
+      letter-spacing: 0.01em;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(200,255,0,0.3); }
+    .btn-ghost {
+      background: transparent; color: var(--chalk);
+      border: 1px solid rgba(246,245,242,0.25); border-radius: var(--r);
+      padding: 12px 28px;
+      font-family: var(--f-body); font-size: 0.9rem; font-weight: 500;
+      cursor: pointer; transition: border-color var(--transition), background var(--transition);
+    }
+    .btn-ghost:hover { border-color: var(--chalk); background: rgba(255,255,255,0.06); }
+    .hero-stats {
+      display: flex; gap: 32px; margin-top: 48px; padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .stat-num {
+      font-family: var(--f-display); font-size: 1.8rem;
+      color: var(--volt);
+    }
+    .stat-label { font-size: 0.75rem; color: #9A9A9F; margin-top: 2px; }
+
+    .hero-visual {
+      background: linear-gradient(145deg, #1A1A20, #111115);
+      border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);
+      padding: 32px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .hero-card-mini {
+      background: rgba(255,255,255,0.05); border-radius: 10px;
+      padding: 16px; display: flex; align-items: center; gap: 14px;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: background var(--transition);
+    }
+    .hero-card-mini:hover { background: rgba(255,255,255,0.08); }
+    .hero-card-icon {
+      width: 44px; height: 44px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .hero-card-name { font-size: 0.875rem; font-weight: 600; color: var(--chalk); }
+    .hero-card-price { font-size: 0.75rem; color: var(--volt); font-weight: 700; margin-top: 2px; }
+
+    /* ─── SECTION ──────────────────────────────────────────────── */
+    .section { padding: 72px 0; }
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 40px; gap: 16px;
+    }
+    .section-title {
+      font-family: var(--f-display);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+    .section-title em { font-style: italic; color: var(--mid); }
+    .see-all {
+      font-size: 0.8rem; font-weight: 600; color: var(--mid);
+      text-decoration: none; cursor: pointer; white-space: nowrap;
+      transition: color var(--transition);
+    }
+    .see-all:hover { color: var(--ink); }
+
+    /* ─── CATEGORY PILLS ───────────────────────────────────────── */
+    .filter-bar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 36px;
+    }
+    .pill {
+      padding: 6px 16px; border-radius: 100px;
+      border: 1px solid var(--wire);
+      background: var(--surface); color: var(--mid);
+      font-size: 0.8rem; font-weight: 500; cursor: pointer;
+      transition: all var(--transition);
+    }
+    .pill:hover { border-color: var(--ink); color: var(--ink); }
+    .pill.active {
+      background: var(--ink); color: var(--chalk); border-color: var(--ink);
+    }
+
+    /* ─── PRODUCT GRID ─────────────────────────────────────────── */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .product-card {
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--wire);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition);
+      position: relative;
+    }
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(13,13,15,0.1);
+    }
+    .product-img {
+      width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem; position: relative;
+      overflow: hidden;
+    }
+    .product-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--volt); color: var(--ink);
+      font-size: 0.65rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 4px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .badge-sale { background: var(--error); color: #fff; }
+    .wishlist-btn {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,0.85); border: none; border-radius: 50%;
+      width: 32px; height: 32px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: background var(--transition), transform var(--transition);
+    }
+    .wishlist-btn:hover { background: #fff; transform: scale(1.1); }
+    .product-body { padding: 16px 20px 20px; }
+    .product-cat {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--mid); margin-bottom: 6px;
+    }
+    .product-name {
+      font-size: 0.95rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 8px; line-height: 1.35;
+    }
+    .product-rating {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: var(--mid); margin-bottom: 12px;
+    }
+    .stars { color: #F5A623; }
+    .product-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .product-price { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+    .product-price-old {
+      font-size: 0.8rem; color: var(--mid); text-decoration: line-through; margin-left: 6px;
+    }
+    .add-btn {
+      background: var(--ink); color: var(--chalk);
+      border: none; border-radius: var(--r); padding: 7px 14px;
+      font-family: var(--f-body); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: background var(--transition), transform var(--transition);
+    }
+    .add-btn:hover { background: #333; transform: scale(1.04); }
+    .add-btn.added { background: var(--volt); color: var(--ink); }
+
+    /* ─── PRODUCT DETAIL ───────────────────────────────────────── */
+    .detail-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+      align-items: start;
+    }
+    .detail-img-main {
+      background: var(--surface); border-radius: 16px;
+      border: 1px solid var(--wire);
+      aspect-ratio: 1; display: flex; align-items: center;
+      justify-content: center; font-size: 8rem;
+    }
+    .detail-title {
+      font-family: var(--f-display);
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      line-height: 1.1; letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .detail-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .detail-price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+    .detail-price {
+      font-size: 2rem; font-weight: 700;
+    }
+    .detail-desc { color: var(--mid); line-height: 1.7; margin-bottom: 28px; font-size: 0.95rem; }
+    .spec-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px;
+    }
+    .spec-item {
+      background: var(--chalk); border-radius: 8px; padding: 12px 14px;
+    }
+    .spec-label { font-size: 0.7rem; color: var(--mid); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em; }
+    .spec-val { font-size: 0.875rem; font-weight: 600; margin-top: 3px; }
+    .qty-row { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+    .qty-ctrl {
+      display: flex; align-items: center; border: 1px solid var(--wire);
+      border-radius: var(--r); overflow: hidden;
+    }
+    .qty-btn {
+      background: none; border: none; width: 36px; height: 36px;
+      cursor: pointer; font-size: 1.1rem; color: var(--ink);
+      transition: background var(--transition);
+    }
+    .qty-btn:hover { background: var(--chalk); }
+    .qty-num { width: 40px; text-align: center; font-weight: 600; font-size: 0.9rem; }
+    .detail-cta {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--mid); font-size: 0.85rem; cursor: pointer;
+      margin-bottom: 32px; transition: color var(--transition);
+    }
+    .back-link:hover { color: var(--ink); }
+
+    /* ─── CART PANEL ───────────────────────────────────────────── */
+    .cart-overlay {
+      position: fixed; inset: 0; background: rgba(13,13,15,0.5);
+      z-index: 200; opacity: 0; pointer-events: none;
+      transition: opacity var(--transition);
+    }
+    .cart-overlay.open { opacity: 1; pointer-events: all; }
+    .cart-panel {
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: min(420px, 100vw);
+      background: var(--surface);
+      z-index: 201; display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform var(--transition);
+      box-shadow: -8px 0 40px rgba(13,13,15,0.15);
+    }
+    .cart-panel.open { transform: translateX(0); }
+    .cart-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px; border-bottom: 1px solid var(--wire);
+    }
+    .cart-head h2 { font-family: var(--f-display); font-size: 1.4rem; }
+    .close-btn {
+      background: none; border: none; font-size: 1.4rem;
+      cursor: pointer; color: var(--mid); transition: color var(--transition);
+    }
+    .close-btn:hover { color: var(--ink); }
+    .cart-items { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .cart-item {
+      display: flex; gap: 14px; padding: 16px 0;
+      border-bottom: 1px solid var(--wire);
+    }
+    .cart-item-icon {
+      width: 56px; height: 56px; border-radius: 8px;
+      background: var(--chalk); display: flex; align-items: center;
+      justify-content: center; font-size: 1.8rem; flex-shrink: 0;
+    }
+    .cart-item-name { font-size: 0.875rem; font-weight: 600; }
+    .cart-item-price { font-size: 0.8rem; color: var(--mid); margin-top: 4px; }
+    .cart-item-remove {
+      margin-left: auto; background: none; border: none;
+      color: var(--mid); cursor: pointer; font-size: 0.75rem;
+      transition: color var(--transition);
+    }
+    .cart-item-remove:hover { color: var(--error); }
+    .cart-empty {
+      text-align: center; padding: 60px 24px; color: var(--mid);
+    }
+    .cart-empty .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .cart-foot {
+      padding: 20px 24px; border-top: 1px solid var(--wire);
+    }
+    .cart-total {
+      display: flex; justify-content: space-between;
+      font-weight: 700; font-size: 1.05rem; margin-bottom: 16px;
+    }
+    .checkout-btn {
+      width: 100%; background: var(--ink); color: var(--chalk);
+      border: none; border-radius: var(--r); padding: 14px;
+      font-family: var(--f-body); font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: background var(--transition);
+    }
+    .checkout-btn:hover { background: #222; }
+
+    /* ─── ABOUT PAGE ───────────────────────────────────────────── */
+    .about-hero {
+      background: var(--ink); color: var(--chalk);
+      padding: 80px 0; text-align: center;
+    }
+    .about-headline {
+      font-family: var(--f-display);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      letter-spacing: -0.025em; margin-bottom: 16px;
+    }
+    .about-headline em { color: var(--volt); font-style: italic; }
+    .about-sub { color: #9A9A9F; max-width: 520px; margin: 0 auto; line-height: 1.7; }
+    .values-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px; margin-top: 48px;
+    }
+    .value-card {
+      background: var(--surface); border-radius: 12px;
+      border: 1px solid var(--wire); padding: 28px 24px;
+    }
+    .value-icon { font-size: 2rem; margin-bottom: 14px; }
+    .value-title { font-weight: 700; margin-bottom: 8px; }
+    .value-desc { font-size: 0.875rem; color: var(--mid); line-height: 1.6; }
+
+    /* ─── FOOTER ───────────────────────────────────────────────── */
+    .footer {
+      background: var(--ink); color: #9A9A9F;
+      padding: 48px 0 32px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px; margin-bottom: 40px;
+    }
+    .footer-logo { font-family: var(--f-display); font-size: 1.4rem; color: var(--chalk); margin-bottom: 10px; }
+    .footer-logo span { background: var(--volt); color: var(--ink); padding: 1px 5px; border-radius: 2px; font-style: italic; }
+    .footer-desc { font-size: 0.85rem; line-height: 1.7; max-width: 260px; }
+    .footer-col-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--chalk); margin-bottom: 14px; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 8px; }
+    .footer-links a { font-size: 0.85rem; color: #9A9A9F; text-decoration: none;
+      cursor: pointer; transition: color var(--transition); }
+    .footer-links a:hover { color: var(--chalk); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 24px; display: flex; justify-content: space-between;
+      align-items: center; font-size: 0.78rem;
+    }
+    .volt-dot {
+      display: inline-block; width: 8px; height: 8px;
+      background: var(--volt); border-radius: 50; margin-right: 4px;
+    }
+
+    /* ─── TOAST ────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      background: var(--ink); color: var(--chalk);
+      padding: 12px 24px; border-radius: 100px;
+      font-size: 0.875rem; font-weight: 500;
+      z-index: 300; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      pointer-events: none;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast-dot { width: 8px; height: 8px; background: var(--volt); border-radius: 50%; }
+
+    /* ─── SEARCH ───────────────────────────────────────────────── */
+    .search-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1px solid var(--wire);
+      border-radius: var(--r); padding: 10px 16px;
+      margin-bottom: 28px; transition: border-color var(--transition);
+    }
+    .search-bar:focus-within { border-color: var(--ink); }
+    .search-bar input {
+      border: none; outline: none; font-family: var(--f-body);
+      font-size: 0.9rem; width: 100%; background: transparent; color: var(--ink);
+    }
+    .search-icon { color: var(--mid); font-size: 1rem; }
+
+    /* ─── MOBILE ───────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .menu-btn { display: block; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .hero { padding: 52px 0 48px; }
+      .detail-grid { grid-template-columns: 1fr; gap: 32px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+      .hero-stats { gap: 20px; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .product-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+
+    /* ─── PAGE TRANSITIONS ─────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .page-enter { animation: fadeUp 0.35s ease forwards; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback, useMemo, useRef } = React;
+
+/* ─── DATA ───────────────────────────────────────────────────── */
+const PRODUCTS = [
+  { id:1,  name:"SoundArc Pro",       cat:"Audio",    price:299,  oldPrice:349, rating:4.8, reviews:312, emoji:"🎧", color:"#1A1A2E", badge:"New",  desc:"Studio-grade wireless headphones with 40h battery, adaptive ANC, and spatial audio. Built for creators and audiophiles who refuse to compromise.",  specs:{Driver:"40mm planar",Battery:"40h",Connectivity:"Bluetooth 5.3",Weight:"285g"} },
+  { id:2,  name:"LumiTab X",          cat:"Displays", price:849,  oldPrice:null,rating:4.6, reviews:198, emoji:"🖥️", color:"#0D2137", badge:null,  desc:"15.6\" OLED portable monitor with USB-C PD, 1ms response, and a magnesium-alloy chassis thinner than your passport.", specs:{Display:"15.6\" OLED",Resolution:"2560×1440",Refresh:"120Hz",Weight:"710g"} },
+  { id:3,  name:"KeyForce 75%",       cat:"Keyboards",price:189,  oldPrice:219, rating:4.9, reviews:541, emoji:"⌨️", color:"#0F2027", badge:"Sale", desc:"Hot-swap mechanical keyboard with gasket mount, aluminum top, and south-facing RGB. Comes pre-lubed, ready to type.", specs:{Layout:"75%",Switches:"Gateron G Pro",Connect:"Wired/BT",Material:"Alu+PC"} },
+  { id:4,  name:"TrackMag Duo",       cat:"Peripherals",price:129,oldPrice:null,rating:4.5, reviews:87,  emoji:"🖱️", color:"#1B1B2F", badge:null,  desc:"Precision trackball with dual Bluetooth + USB-C, 8-button programmable layout, and a detachable wrist rest.", specs:{DPI:"100–3200",Buttons:"8",Connect:"BT5/USB-C",Battery:"6 months"} },
+  { id:5,  name:"VoltHub 12-in-1",   cat:"Hubs",     price:99,   oldPrice:119, rating:4.7, reviews:263, emoji:"🔌", color:"#12131A", badge:"Sale", desc:"Desktop USB4 hub delivering 100W PD, triple display output, 2.5G Ethernet, and SD/MicroSD in a compact aluminum tower.", specs:{Ports:"12",PD:"100W",Ethernet:"2.5GbE",Video:"Triple 4K"} },
+  { id:6,  name:"NanoLight Bar",      cat:"Lighting",  price:59,  oldPrice:null,rating:4.4, reviews:154, emoji:"💡", color:"#1A0A00", badge:"New",  desc:"RGBIC monitor light bar with music sync, bias lighting, and app-free control. No glare, full spectrum.", specs:{Length:"50cm",Colors:"16M RGBIC",Control:"Touch+App",CRI:"90+"} },
+  { id:7,  name:"CoreCase M2",        cat:"Storage",   price:45,  oldPrice:null,rating:4.6, reviews:92,  emoji:"💾", color:"#0A1628", badge:null,  desc:"Rugged SSD enclosure for M.2 NVMe drives, hitting 10Gbps over USB-C. Fits in your shirt pocket.", specs:{Interface:"USB 3.2 Gen2",Speed:"1000 MB/s",Compat:"NVMe/SATA",Material:"Aluminum"} },
+  { id:8,  name:"ArcCam 4K",          cat:"Cameras",  price:399,  oldPrice:449, rating:4.7, reviews:176, emoji:"📷", color:"#0D0D1A", badge:"Sale", desc:"4K60 webcam with Sony sensor, auto-framing AI, dual mics with beamforming, and a magnetic mount system.", specs:{Resolution:"4K/60fps",Sensor:"Sony STARVIS",FOV:"90° adj.",Audio:"Dual beam-mic"} },
+];
+
+const CATEGORIES = ["All", ...Array.from(new Set(PRODUCTS.map(p => p.cat)))];
+
+/* ─── ROUTER (hash-based client-side routing) ─────────────────── */
+function useRouter() {
+  const [route, setRoute] = useState(() => {
+    const h = window.location.hash.replace('#','') || '/';
+    return h;
+  });
+  useEffect(() => {
+    const handler = () => setRoute(window.location.hash.replace('#','') || '/');
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, []);
+  const navigate = useCallback((path) => {
+    window.location.hash = path;
+    window.scrollTo(0, 0);
+  }, []);
+  return { route, navigate };
+}
+
+/* ─── TOAST HOOK ─────────────────────────────────────────────── */
+function useToast() {
+  const [msg, setMsg] = useState(null);
+  const timer = useRef(null);
+  const show = useCallback((m) => {
+    setMsg(m);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setMsg(null), 2500);
+  }, []);
+  return { msg, show };
+}
+
+/* ─── COMPONENTS ─────────────────────────────────────────────── */
+
+function StarRating({ rating }) {
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5;
+  return (
+    <span className="stars">
+      {"★".repeat(full)}{half ? "½" : ""}{"☆".repeat(5 - full - (half?1:0))}
+    </span>
+  );
+}
+
+function ProductCard({ product, onAdd, onView, inCart }) {
+  return (
+    <div className="product-card" onClick={() => onView(product.id)}>
+      <div className="product-img" style={{background: `linear-gradient(145deg, ${product.color}, #1a1a20)`}}>
+        <span style={{filter:'drop-shadow(0 4px 16px rgba(0,0,0,0.4))'}}>
+          {product.emoji}
+        </span>
+        {product.badge && (
+          <span className={`product-badge ${product.badge==='Sale'?'badge-sale':''}`}>
+            {product.badge}
+          </span>
+        )}
+        <button
+          className="wishlist-btn"
+          onClick={e => { e.stopPropagation(); }}
+          aria-label="Add to wishlist"
+        >♡</button>
+      </div>
+      <div className="product-body">
+        <div className="product-cat">{product.cat}</div>
+        <div className="product-name">{product.name}</div>
+        <div className="product-rating">
+          <StarRating rating={product.rating} />
+          <span>{product.rating} ({product.reviews})</span>
+        </div>
+        <div className="product-footer">
+          <div>
+            <span className="product-price">${product.price}</span>
+            {product.oldPrice && <span className="product-price-old">${product.oldPrice}</span>}
+          </div>
+          <button
+            className={`add-btn ${inCart ? 'added' : ''}`}
+            onClick={e => { e.stopPropagation(); onAdd(product); }}
+          >
+            {inCart ? '✓ Added' : '+ Cart'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Hero({ onShop, onNavigate }) {
+  const featured = PRODUCTS.slice(0, 3);
+  return (
+    <section className="hero">
+      <div className="container">
+        <div className="hero-inner">
+          <div>
+            <div className="hero-eyebrow">New collection — Summer 2025</div>
+            <h1 className="hero-headline">
+              Electronics<br />
+              for people who <em>actually</em><br />
+              know the difference.
+            </h1>
+            <p className="hero-sub">
+              Curated hardware for creators, coders, and power users.
+              No bloat. No compromise. Just the right tools.
+            </p>
+            <div className="hero-ctas">
+              <button className="btn-primary" onClick={onShop}>Shop Catalog</button>
+              <button className="btn-ghost" onClick={() => onNavigate('/about')}>Our Story</button>
+            </div>
+            <div className="hero-stats">
+              <div>
+                <div className="stat-num">8+</div>
+                <div className="stat-label">Product lines</div>
+              </div>
+              <div>
+                <div className="stat-num">2k+</div>
+                <div className="stat-label">Happy customers</div>
+              </div>
+              <div>
+                <div className="stat-num">4.7★</div>
+                <div className="stat-label">Avg. rating</div>
+              </div>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div style={{fontSize:'0.7rem',color:'#555',fontWeight:600,letterSpacing:'0.1em',textTransform:'uppercase',marginBottom:'4px'}}>Featured picks</div>
+            {featured.map(p => (
+              <div key={p.id} className="hero-card-mini" onClick={() => onNavigate(`/product/${p.id}`)}>
+                <div className="hero-card-icon" style={{background:`${p.color}99`}}>{p.emoji}</div>
+                <div>
+                  <div className="hero-card-name">{p.name}</div>
+                  <div className="hero-card-price">${p.price}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CatalogPage({ cart, onAdd, onNavigate }) {
+  const [category, setCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("default");
+
+  const filtered = useMemo(() => {
+    let list = PRODUCTS;
+    if (category !== "All") list = list.filter(p => p.cat === category);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(p => p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q));
+    }
+    if (sort === "price-asc") list = [...list].sort((a,b) => a.price - b.price);
+    if (sort === "price-desc") list = [...list].sort((a,b) => b.price - a.price);
+    if (sort === "rating") list = [...list].sort((a,b) => b.rating - a.rating);
+    return list;
+  }, [category, search, sort]);
+
+  const cartIds = new Set(cart.map(i => i.id));
+
+  return (
+    <main className="section page-enter">
+      <div className="container">
+        <div className="section-header">
+          <h2 className="section-title">Full <em>catalog</em></h2>
+          <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+            <span style={{fontSize:'0.8rem',color:'var(--mid)'}}>Sort:</span>
+            <select
+              value={sort}
+              onChange={e => setSort(e.target.value)}
+              style={{border:'1px solid var(--wire)',borderRadius:'6px',padding:'5px 10px',
+                fontFamily:'inherit',fontSize:'0.8rem',cursor:'pointer',background:'var(--surface)'}}
+            >
+              <option value="default">Featured</option>
+              <option value="price-asc">Price ↑</option>
+              <option value="price-desc">Price ↓</option>
+              <option value="rating">Rating</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="search-bar">
+          <span className="search-icon">🔍</span>
+          <input
+            placeholder="Search products…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            aria-label="Search products"
+          />
+        </div>
+
+        <div className="filter-bar">
+          {CATEGORIES.map(c => (
+            <button
+              key={c}
+              className={`pill ${category === c ? 'active' : ''}`}
+              onClick={() => setCategory(c)}
+            >{c}</button>
+          ))}
+        </div>
+
+        {filtered.length === 0 ? (
+          <div style={{textAlign:'center',padding:'60px 0',color:'var(--mid)'}}>
+            <div style={{fontSize:'3rem',marginBottom:'12px'}}>🔭</div>
+            <div style={{fontWeight:600}}>No products match your search.</div>
+            <div style={{fontSize:'0.85rem',marginTop:'6px'}}>Try clearing the filter or search term.</div>
+          </div>
+        ) : (
+          <div className="product-grid">
+            {filtered.map(p => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                onAdd={onAdd}
+                onView={id => onNavigate(`/product/${id}`)}
+                inCart={cartIds.has(p.id)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+function ProductDetail({ productId, cart, onAdd, onNavigate }) {
+  const product = PRODUCTS.find(p => p.id === Number(productId));
+  const [qty, setQty] = useState(1);
+
+  if (!product) return (
+    <div className="container" style={{padding:'80px 24px',textAlign:'center'}}>
+      <div style={{fontSize:'3rem',marginBottom:'12px'}}>😕</div>
+      <p style={{fontWeight:600}}>Product not found.</p>
+      <button className="btn-primary" style={{marginTop:'16px'}} onClick={() => onNavigate('/catalog')}>Back to Catalog</button>
+    </div>
+  );
+
+  const inCart = cart.some(i => i.id === product.id);
+
+  return (
+    <main className="section page-enter">
+      <div className="container">
+        <div className="back-link" onClick={() => onNavigate('/catalog')}>
+          ← Back to catalog
+        </div>
+        <div className="detail-grid">
+          <div className="detail-img-main" style={{background:`linear-gradient(145deg,${product.color},#0d0d10)`}}>
+            <span style={{fontSize:'8rem',filter:'drop-shadow(0 8px 32px rgba(0,0,0,0.6))'}}>
+              {product.emoji}
+            </span>
+          </div>
+          <div>
+            <div className="product-cat" style={{marginBottom:'8px'}}>{product.cat}</div>
+            <h1 className="detail-title">{product.name}</h1>
+            <div className="detail-rating">
+              <StarRating rating={product.rating} />
+              <span style={{fontSize:'0.85rem',color:'var(--mid)',marginLeft:'6px'}}>
+                {product.rating} · {product.reviews} reviews
+              </span>
+            </div>
+            <div className="detail-price-row">
+              <span className="detail-price">${product.price}</span>
+              {product.oldPrice && (
+                <span style={{fontSize:'1rem',color:'var(--mid)',textDecoration:'line-through'}}>
+                  ${product.oldPrice}
+                </span>
+              )}
+              {product.badge && (
+                <span className={`product-badge ${product.badge==='Sale'?'badge-sale':''}`} style={{position:'static'}}>
+                  {product.badge}
+                </span>
+              )}
+            </div>
+            <p className="detail-desc">{product.desc}</p>
+            <div className="spec-grid">
+              {Object.entries(product.specs).map(([k,v]) => (
+                <div key={k} className="spec-item">
+                  <div className="spec-label">{k}</div>
+                  <div className="spec-val">{v}</div>
+                </div>
+              ))}
+            </div>
+            <div className="qty-row">
+              <div className="qty-ctrl">
+                <button className="qty-btn" onClick={() => setQty(q => Math.max(1, q-1))}>−</button>
+                <span className="qty-num">{qty}</span>
+                <button className="qty-btn" onClick={() => setQty(q => q+1)}>+</button>
+              </div>
+              <span style={{fontSize:'0.8rem',color:'var(--mid)'}}>
+                {qty > 1 ? `${qty} × $${product.price} = $${qty * product.price}` : ''}
+              </span>
+            </div>
+            <div className="detail-cta">
+              <button
+                className={`btn-primary ${inCart ? '' : ''}`}
+                style={inCart ? {background:'var(--volt)',color:'var(--ink)'} : {}}
+                onClick={() => onAdd(product, qty)}
+              >
+                {inCart ? '✓ In Cart' : 'Add to Cart'}
+              </button>
+              <button className="btn-ghost" style={{color:'var(--ink)',borderColor:'var(--wire)'}}>
+                ♡ Wishlist
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function AboutPage() {
+  const values = [
+    { icon:"⚡", title:"No fluff", desc:"Every product earns its place. If it's here, it passed our hands-on testing." },
+    { icon:"🔬", title:"Spec-honest", desc:"We show you what matters, not what marketing decided sounds impressive." },
+    { icon:"🌍", title:"Sustainable shipping", desc:"Carbon-neutral logistics on every order. Packaging is 100% recyclable." },
+    { icon:"🛡️", title:"2-year guarantee", desc:"Everything we sell is backed by our own warranty, not just the manufacturer's." },
+  ];
+  return (
+    <main className="page-enter">
+      <div className="about-hero">
+        <div className="container">
+          <h1 className="about-headline">Built by people who <em>use</em> this stuff.</h1>
+          <p className="about-sub">
+            VOLTA started as a slack channel where engineers shared gear recommendations.
+            Now it's a curated shop — same rigour, wider catalogue.
+          </p>
+        </div>
+      </div>
+      <div className="section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">What we <em>stand for</em></h2>
+          </div>
+          <div className="values-grid">
+            {values.map(v => (
+              <div key={v.title} className="value-card">
+                <div className="value-icon">{v.icon}</div>
+                <div className="value-title">{v.title}</div>
+                <div className="value-desc">{v.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            marginTop:'64px', background:'var(--ink)', borderRadius:'16px',
+            padding:'48px', color:'var(--chalk)', textAlign:'center'
+          }}>
+            <div style={{fontFamily:'var(--f-display)',fontSize:'1.8rem',marginBottom:'12px'}}>
+              Join 2,000+ customers who chose <span style={{color:'var(--volt)',fontStyle:'italic'}}>better gear.</span>
+            </div>
+            <p style={{color:'#9A9A9F',maxWidth:'440px',margin:'0 auto 24px',fontSize:'0.9rem'}}>
+              Free shipping on orders over $150. No subscription required. Cancel anytime.
+            </p>
+            <div style={{display:'flex',gap:'10px',justifyContent:'center',flexWrap:'wrap'}}>
+              <input
+                placeholder="your@email.com"
+                style={{padding:'12px 18px',borderRadius:'6px',border:'none',
+                  fontFamily:'inherit',fontSize:'0.9rem',width:'240px',outline:'none'}}
+              />
+              <button className="btn-primary">Get updates</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function CartPanel({ cart, open, onClose, onRemove }) {
+  const total = cart.reduce((s, i) => s + i.price * (i.qty||1), 0);
+  return (
+    <>
+      <div className={`cart-overlay ${open?'open':''}`} onClick={onClose} />
+      <aside className={`cart-panel ${open?'open':''}`} aria-label="Shopping cart">
+        <div className="cart-head">
+          <h2>Cart {cart.length > 0 && `(${cart.length})`}</h2>
+          <button className="close-btn" onClick={onClose} aria-label="Close cart">✕</button>
+        </div>
+        <div className="cart-items">
+          {cart.length === 0 ? (
+            <div className="cart-empty">
+              <div className="empty-icon">🛒</div>
+              <div style={{fontWeight:600,marginBottom:'6px'}}>Your cart is empty.</div>
+              <div style={{fontSize:'0.85rem'}}>Add something from the catalog.</div>
+            </div>
+          ) : cart.map(item => (
+            <div key={item.id} className="cart-item">
+              <div className="cart-item-icon">{item.emoji}</div>
+              <div style={{flex:1}}>
+                <div className="cart-item-name">{item.name}</div>
+                <div className="cart-item-price">${item.price} {item.qty > 1 ? `× ${item.qty}` : ''}</div>
+              </div>
+              <button className="cart-item-remove" onClick={() => onRemove(item.id)}>Remove</button>
+            </div>
+          ))}
+        </div>
+        {cart.length > 0 && (
+          <div className="cart-foot">
+            <div className="cart-total">
+              <span>Total</span>
+              <span>${total.toLocaleString()}</span>
+            </div>
+            <button className="checkout-btn">Proceed to Checkout →</button>
+          </div>
+        )}
+      </aside>
+    </>
+  );
+}
+
+function Nav({ route, navigate, cartCount, onCartOpen }) {
+  const links = [
+    { label:"Catalog", path:"/catalog" },
+    { label:"About",   path:"/about"   },
+  ];
+  return (
+    <nav className="nav" role="navigation">
+      <div className="container nav-inner">
+        <div className="nav-logo" onClick={() => navigate('/')}>
+          <span>V</span>OLTA
+        </div>
+        <ul className="nav-links">
+          {links.map(l => (
+            <li key={l.path}>
+              <a
+                className={route === l.path ? 'active' : ''}
+                onClick={() => navigate(l.path)}
+                role="link"
+              >{l.label}</a>
+            </li>
+          ))}
+        </ul>
+        <div className="nav-right">
+          <button className="cart-btn" onClick={onCartOpen} aria-label="Open cart">
+            🛒 Cart
+            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+          </button>
+          <button className="menu-btn" aria-label="Menu">☰</button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function Footer({ navigate }) {
+  return (
+    <footer className="footer">
+      <div className="container">
+        <div className="footer-grid">
+          <div>
+            <div className="footer-logo"><span>V</span>OLTA</div>
+            <p className="footer-desc">
+              Curated electronics for the people who know the difference. Based in SF, shipping worldwide.
+            </p>
+          </div>
+          <div>
+            <div className="footer-col-title">Shop</div>
+            <ul className="footer-links">
+              <li><a onClick={() => navigate('/catalog')}>All Products</a></li>
+              <li><a onClick={() => navigate('/catalog')}>Audio</a></li>
+              <li><a onClick={() => navigate('/catalog')}>Keyboards</a></li>
+              <li><a onClick={() => navigate('/catalog')}>Displays</a></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-col-title">Company</div>
+            <ul className="footer-links">
+              <li><a onClick={() => navigate('/about')}>About</a></li>
+              <li><a>Blog</a></li>
+              <li><a>Careers</a></li>
+              <li><a>Press</a></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-col-title">Support</div>
+            <ul className="footer-links">
+              <li><a>Contact</a></li>
+              <li><a>Returns</a></li>
+              <li><a>Warranty</a></li>
+              <li><a>FAQ</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span>© 2025 VOLTA Electronics. All rights reserved.</span>
+          <span>
+            <span className="volt-dot" style={{display:'inline-block',width:'8px',height:'8px',
+              background:'var(--volt)',borderRadius:'50%',marginRight:'6px'}}></span>
+            Designed to deploy
+          </span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ─── APP ─────────────────────────────────────────────────────── */
+function App() {
+  const { route, navigate } = useRouter();
+  const [cart, setCart] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const { msg: toastMsg, show: showToast } = useToast();
+
+  const addToCart = useCallback((product, qty = 1) => {
+    setCart(prev => {
+      const ex = prev.find(i => i.id === product.id);
+      if (ex) return prev.map(i => i.id === product.id ? {...i, qty:(i.qty||1)+qty} : i);
+      return [...prev, {...product, qty}];
+    });
+    showToast(`${product.emoji} ${product.name} added to cart`);
+  }, [showToast]);
+
+  const removeFromCart = useCallback((id) => {
+    setCart(prev => prev.filter(i => i.id !== id));
+  }, []);
+
+  const cartCount = cart.reduce((s, i) => s + (i.qty||1), 0);
+
+  // Parse route
+  const productMatch = route.match(/^\/product\/(\d+)$/);
+
+  let page;
+  if (route === '/' || route === '') {
+    page = <><Hero onShop={() => navigate('/catalog')} onNavigate={navigate} />
+      <section className="section" style={{paddingTop:'0'}}>
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Popular <em>picks</em></h2>
+            <a className="see-all" onClick={() => navigate('/catalog')}>See all →</a>
+          </div>
+          <div className="product-grid">
+            {PRODUCTS.slice(0,4).map(p => (
+              <ProductCard key={p.id} product={p} onAdd={addToCart}
+                onView={id => navigate(`/product/${id}`)}
+                inCart={cart.some(i => i.id === p.id)} />
+            ))}
+          </div>
+        </div>
+      </section>
+    </>;
+  } else if (route === '/catalog') {
+    page = <CatalogPage cart={cart} onAdd={addToCart} onNavigate={navigate} />;
+  } else if (productMatch) {
+    page = <ProductDetail productId={productMatch[1]} cart={cart} onAdd={addToCart} onNavigate={navigate} />;
+  } else if (route === '/about') {
+    page = <AboutPage />;
+  } else {
+    page = (
+      <div style={{textAlign:'center',padding:'100px 24px'}}>
+        <div style={{fontSize:'3rem',marginBottom:'12px'}}>🗺️</div>
+        <h2 style={{fontFamily:'var(--f-display)',fontSize:'2rem',marginBottom:'12px'}}>Page not found.</h2>
+        <button className="btn-primary" onClick={() => navigate('/')}>Go home</button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Nav route={route} navigate={navigate} cartCount={cartCount} onCartOpen={() => setCartOpen(true)} />
+      {page}
+      <Footer navigate={navigate} />
+      <CartPanel cart={cart} open={cartOpen} onClose={() => setCartOpen(false)} onRemove={removeFromCart} />
+      <div className={`toast ${toastMsg ? 'show' : ''}`}>
+        <span className="toast-dot" />
+        {toastMsg}
+      </div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
